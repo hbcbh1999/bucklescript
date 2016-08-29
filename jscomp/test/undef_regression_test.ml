@@ -3,7 +3,7 @@
 
 
 let f obj = 
-  if Js.typeof obj = "function" then 
+  if Js.unsafe_typeof obj = "function" then 
     ()
   else 
     let size = Js_obj.size_of_any obj in

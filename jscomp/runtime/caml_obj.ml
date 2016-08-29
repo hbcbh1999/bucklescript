@@ -104,13 +104,13 @@ let unsafe_js_compare x y =
     as well as the [List.sort] and [Array.sort] functions.
 *)
 let rec caml_compare (a : Obj.t) (b : Obj.t) : int = 
-  if Js.typeof a = "string" then
+  if Js.unsafe_typeof a = "string" then
     caml_string_compare (Obj.magic a) (Obj.magic b )
-  else if Js.typeof a = "number" then
+  else if Js.unsafe_typeof a = "number" then
     caml_int_compare (Obj.magic a) (Obj.magic b )
-  else if Js.typeof a = "boolean" 
-          || Js.typeof a = "null"
-          || Js.typeof a = "undefined"
+  else if Js.unsafe_typeof a = "boolean" 
+          || Js.unsafe_typeof a = "null"
+          || Js.unsafe_typeof a = "undefined"
   then 
     unsafe_js_compare a b 
   else
@@ -164,11 +164,11 @@ and aux_length_b_short (a : Obj.t) (b : Obj.t) i short_length =
 type eq = Obj.t -> Obj.t -> bool
 
 let rec caml_equal (a : Obj.t) (b : Obj.t) : bool = 
-  if Js.typeof a = "string" 
-  || Js.typeof a = "number"
-  || Js.typeof a = "boolean"
-  || Js.typeof a = "undefined"
-  || Js.typeof a = "null"
+  if Js.unsafe_typeof a = "string" 
+  || Js.unsafe_typeof a = "number"
+  || Js.unsafe_typeof a = "boolean"
+  || Js.unsafe_typeof a = "undefined"
+  || Js.unsafe_typeof a = "null"
   then a == b else
     let tag_a = Js_obj.tag a in
     let tag_b = Js_obj.tag b in

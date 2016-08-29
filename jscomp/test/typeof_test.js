@@ -1,5 +1,6 @@
 'use strict';
 
+var Js    = require("../../lib/js/js");
 var Mt    = require("./mt");
 var Block = require("../../lib/js/block");
 
@@ -23,7 +24,18 @@ var suites_001 = /* :: */[
               ]);
     }
   ],
-  /* [] */0
+  /* :: */[
+    /* tuple */[
+      "int_gadt_test",
+      function () {
+        return /* Neq */Block.__(1, [
+                  Js.test(3, /* Number */3),
+                  Js.$$null
+                ]);
+      }
+    ],
+    /* [] */0
+  ]
 ];
 
 var suites = /* :: */[

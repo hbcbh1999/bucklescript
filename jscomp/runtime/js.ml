@@ -52,7 +52,7 @@ external true_ : boolean = "true" [@@bs.val]
 external false_ : boolean = "false" [@@bs.val]
 external to_bool : boolean -> bool = "js_boolean_to_bool" 
 
-external typeof : 'a -> string = "js_typeof"
+external unsafe_typeof : 'a -> string = "js_typeof"
 external log : 'a -> unit = "js_dump"
 
 external unsafe_lt : 'a -> 'a -> boolean = "js_unsafe_lt"
@@ -89,17 +89,78 @@ end
 
 
 
-module Dict = Bs_dict
-module Node = Bs_node  
+module Dict = Js_dict
 module Array = Js_array
 module String = Js_string
 module Re = Js_re
 
 
+type symbol
+(**Js symbol type only available in ES6 *)
+
+type obj_val 
+type undefined_val
+(** This type has only one value [undefined] *)
+type null_val
+(** This type has only one value [null] *)
+type function_val
+
+type _ js_type = 
+  | Undefined :  undefined_val js_type
+  | Null : null_val js_type
+  | Boolean : boolean js_type
+  | Number : float js_type
+  | String : string js_type
+  | Function : function_val js_type
+  | Object : obj_val js_type
+  | Symbol : symbol js_type
 
 
+let typeof (type t) (x : 'a) :  (t js_type * t ) =  
+  if unsafe_typeof x = "undefined" then 
+    (Obj.magic Undefined, Obj.magic x) else
+  if unsafe_typeof x = "null" then 
+    (Obj.magic Null, Obj.magic x) else 
+  if unsafe_typeof x = "number" then 
+    (Obj.magic Number, Obj.magic x ) else 
+  if unsafe_typeof x = "string" then 
+    (Obj.magic String, Obj.magic x) else 
+  if unsafe_typeof x = "boolean" then 
+    (Obj.magic Boolean, Obj.magic x) else 
+  if unsafe_typeof x = "function" then 
+    (Obj.magic Function, Obj.magic x) else 
+  if unsafe_typeof x = "object" then 
+    (Obj.magic Object, Obj.magic x) 
+  else 
+    (Obj.magic Symbol, Obj.magic x) 
+  (* TODO: may change according to engines ?*)
 
+let null = Null.empty
+let undefined = Undefined.empty
 
-
-
-
+let test (type t) (x : 'a) (v : t js_type) : t null =
+  match v with 
+  | Number 
+    -> 
+    if unsafe_typeof x = "number" then Obj.magic x else null 
+  | Boolean 
+    -> 
+    if unsafe_typeof x = "boolean" then Obj.magic x else null 
+  | Undefined 
+    -> 
+    if unsafe_typeof x = "undefined" then Obj.magic x else null
+  | Null 
+    -> 
+    if unsafe_typeof x = "null" then Obj.magic x else null
+  | String
+    -> 
+    if unsafe_typeof x = "string" then Obj.magic x else null
+  | Function
+    -> 
+    if unsafe_typeof x = "function" then Obj.magic x else null 
+  | Object
+    -> 
+    if unsafe_typeof x = "object" then Obj.magic x else null 
+  | Symbol
+    -> 
+    if unsafe_typeof x = "symbol" then Obj.magic x else null 

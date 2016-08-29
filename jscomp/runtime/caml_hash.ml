@@ -93,13 +93,13 @@ let caml_hash_mix_string h  s =
 
 let caml_hash count _limit seed obj = 
   let hash = ref seed in 
-  if Js.typeof obj = "number" then
+  if Js.unsafe_typeof obj = "number" then
     begin 
       let u = (Nativeint.of_float (Obj.magic obj)) in
       hash := mix !hash (u +~ u +~ 1n) ;
       final_mix !hash
     end
-  else if Js.typeof obj = "string" then 
+  else if Js.unsafe_typeof obj = "string" then 
     begin 
       hash := caml_hash_mix_string !hash (Obj.magic obj : string);
       final_mix !hash
@@ -115,24 +115,24 @@ let caml_hash count _limit seed obj =
     in 
     while not @@ Caml_queue.is_empty queue && !num > 0 do
       let obj = Caml_queue.unsafe_pop queue in 
-      if Js.typeof obj = "number" then
+      if Js.unsafe_typeof obj = "number" then
         begin 
           let u = Nativeint.of_float (Obj.magic obj) in
           hash := mix !hash (u +~ u +~ 1n) ;
           decr num ;
         end
-      else if Js.typeof obj = "string" then 
+      else if Js.unsafe_typeof obj = "string" then 
         begin 
           hash := caml_hash_mix_string !hash (Obj.magic obj : string);
           decr num 
         end
-      else if Js.typeof obj = "boolean" then 
+      else if Js.unsafe_typeof obj = "boolean" then 
         ()
-      else if Js.typeof obj = "undefined" then 
+      else if Js.unsafe_typeof obj = "undefined" then 
         ()
-      else if Js.typeof obj = "symbol" then 
+      else if Js.unsafe_typeof obj = "symbol" then 
         assert false (* TODO *)
-      else if Js.typeof obj = "function" then
+      else if Js.unsafe_typeof obj = "function" then
         () 
       else 
         let size = Js_obj.size_of_any obj in 
